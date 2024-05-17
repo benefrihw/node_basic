@@ -6,13 +6,6 @@ const router = express.Router();
 
 const products = [
   {
-    id: "507f1f77bcf86cd799439011",
-    name: "페레로로쉐",
-    description: "맛있는 초콜렛",
-    manager: "스파르탄",
-    status: "FOR_SALE",
-    createdAt: "2024-05-01T05:11:06.285Z",
-    updatedAt: "2024-05-01T05:11:06.285Z",
   },
 ];
 
@@ -40,6 +33,13 @@ router.get("/products/:id", async (req, res) => {
   const products = await Products.findOne({ _id: id })
     .select("-password")
     .exec();
+
+  // 2-1. 일치하는 상품이 없으면 error를 반환한다.
+    if (!products) {
+      return res
+        .status(404)
+        .json({ errorMessage: "해당 상품이 존재하지 않습니다." });
+    }
 
   // 3. 조회된 상품 정보를 Return한다.
   return res.status(200).json({
@@ -84,7 +84,7 @@ router.post("/products", async (req, res) => {
 // localhost:3000/api/products/:id
 router.patch("/products/:id", async (req, res) => {
   const { id } = req.params;
-  const { password, status } = req.body;
+  const { name, description, manager, status, password } = req.body;
 
   // 1. 해당 id로 상품이 존재하는지 확인한다.
   const products = await Products.findById(id).exec();
@@ -95,16 +95,19 @@ router.patch("/products/:id", async (req, res) => {
       .json({ errorMessage: "해당 상품이 존재하지 않습니다." });
   }
 
-  // 2. 비밀번호가 일치하지 않으면 error 반환
+  // 2. 비밀번호가 일치하지 않으면 error를 반환한다.
   if (products.password !== password) {
     return res
       .status(401)
       .json({ errorMessage: "비밀번호가 일치하지 않습니다." });
   }
 
-  // 3. 상품의 status를 변경한다.
-  if (status) {
-    products.status = status;
+  // 3. 상품 정보를 변경한다.
+  if (name || description || manager || status) {
+    products.name = name;
+    products.description = description;
+    products.manager = manager;
+    products.status = status;    
   }
 
   products.updatedAt = new Date();
@@ -132,7 +135,7 @@ router.delete("/products/:id", async (req, res) => {
       .json({ errorMessage: "해당 상품이 존재하지 않습니다." });
   }
 
-  // 2. 비밀번호가 일치하지 않으면 error 반환
+  // 2. 비밀번호가 일치하지 않으면 error를 반환한다.
   if (products.password !== password) {
     return res
       .status(401)

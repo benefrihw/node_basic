@@ -10,9 +10,9 @@ const connect = () => {
       // MONGODB_URL='mongodb+srv://sparta-user:aaaa4321@express-mongo.uy7ttg7.mongodb.net/?retryWrites=true&w=majority'
       // MONGODB_NAME='node_beginner'
       (process.env.MONGODB_URL =
-        "mongodb+srv://benefri:benefri1234@cluster0.loa1oud.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"),
+        ""),
       {
-        dbName: (process.env.MONGODB_NAME = "node_beginner"),
+        dbName: (process.env.MONGODB_NAME = ""),
       },
     )
     .then(() => console.log("MongoDB 연결에 성공하였습니다."))
